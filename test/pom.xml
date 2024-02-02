@@ -22,9 +22,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-       <groupId>org.glassfish.soteria</groupId>
-       <artifactId>parent</artifactId>
-       <version>3.0.1-SNAPSHOT</version>
+        <groupId>org.glassfish.soteria</groupId>
+        <artifactId>parent</artifactId>
+        <version>3.0.1-SNAPSHOT</version>
     </parent>
 
     <groupId>org.glassfish.soteria.test</groupId>
@@ -75,6 +75,7 @@
         <module>app-custom-identity-store-handler</module>
 
         <module>app-jaxrs</module>
+        <module>app-auth-mech-injection</module>
     </modules>
 
     <properties>
@@ -82,7 +83,7 @@
         <maven.compiler.target>11</maven.compiler.target>
 
         <!-- Test servers -->
-        <glassfish.version>7.0.0-SNAPSHOT</glassfish.version>
+        <glassfish.version>7.0.10</glassfish.version>
         
         
         <!-- Below Servers need to be updated to their Jakarta.* versions and currently don't work -->
@@ -137,15 +138,15 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-	            <groupId>com.unboundid</groupId>
-	            <artifactId>unboundid-ldapsdk</artifactId>
-	            <version>6.0.3</version>
-	        </dependency>
-	        <dependency>
-	            <groupId>com.h2database</groupId>
-	            <artifactId>h2</artifactId>
-	            <version>2.1.210</version>
-	        </dependency>
+                <groupId>com.unboundid</groupId>
+                <artifactId>unboundid-ldapsdk</artifactId>
+                <version>6.0.3</version>
+            </dependency>
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>2.1.210</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <dependencies>
@@ -181,7 +182,7 @@
             <scope>test</scope>
         </dependency>
         
-         <dependency>
+        <dependency>
             <groupId>org.jboss.arquillian.protocol</groupId>
             <artifactId>arquillian-protocol-servlet</artifactId>
             <scope>test</scope>
@@ -221,7 +222,7 @@
     </repositories>
 
     <build>
-    	<directory>${buildDirectory}</directory>
+        <directory>${buildDirectory}</directory>
     
         <pluginManagement>
             <plugins>
@@ -259,22 +260,22 @@
     </build>
 
     <!-- 
-    
-            P R O F I L E S
-            
-            There's two types of profiles:
-            
-            1. Profiles that say which libraries should be included, or whether the libraries
-               are provided by the server
-            2. The server against which the tests should be done
-    
-     -->
+
+           P R O F I L E S
+
+           There's two types of profiles:
+
+           1. Profiles that say which libraries should be included, or whether the libraries
+              are provided by the server
+           2. The server against which the tests should be done
+
+    -->
     <profiles>
         <!--
-            This profile assumes a target that already has the Soteria libraries.
-            In Jakarta EE 9+ that would be the default. E.g. in the case of GlassFish/Payara
-            a jakarta.security.enterprise.jar in [gf_home]/glassfish/modules
-          -->
+          This profile assumes a target that already has the Soteria libraries.
+          In Jakarta EE 9+ that would be the default. E.g. in the case of GlassFish/Payara
+          a jakarta.security.enterprise.jar in [gf_home]/glassfish/modules
+        -->
         <profile>
             <id>provided</id>
             <activation>
@@ -282,10 +283,10 @@
             </activation>
             <dependencies>
                 <dependency>
-                   <groupId>jakarta.security.enterprise</groupId>
-                   <artifactId>jakarta.security.enterprise-api</artifactId>
-                   <version>${api_dependency_version}</version>
-                   <scope>provided</scope>
+                    <groupId>jakarta.security.enterprise</groupId>
+                    <artifactId>jakarta.security.enterprise-api</artifactId>
+                    <version>${api_dependency_version}</version>
+                    <scope>provided</scope>
                 </dependency>
             </dependencies>
         </profile>
@@ -374,7 +375,7 @@
                             </execution>
                         </executions>
                     </plugin>
-                        <plugin>
+                    <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-antrun-plugin</artifactId>
                         <version>3.0.0</version>
@@ -389,9 +390,9 @@
                                     <target>
                                         <echo level="info">Replacing in ${glassfish.root}</echo>
                                         <replace token="8080"
-                                            value="8080"
-                                            dir="${glassfish.root}/glassfish7/glassfish/domains/domain1/config/"
-                                            summary="yes">
+                                                 value="8080"
+                                                 dir="${glassfish.root}/glassfish7/glassfish/domains/domain1/config/"
+                                                 summary="yes">
                                             <include name="domain.xml" />
                                         </replace>
                                     </target>
@@ -585,15 +586,15 @@
                         </executions>
                     </plugin>
                 </plugins>
-                </build>
-         </profile>
+            </build>
+        </profile>
         
         
         <!-- 
-            Downloads, installs and runs the version of Payara set by ${payara.version}
-            Combine with the "payara-ci-managed-update" profile to update this to the jars
-            build by this project.
-         -->
+           Downloads, installs and runs the version of Payara set by ${payara.version}
+           Combine with the "payara-ci-managed-update" profile to update this to the jars
+           build by this project.
+        -->
         <profile>
             <id>payara-ci-managed</id>
 
@@ -672,6 +673,26 @@
 
 
         <profile>
+            <id>glassfish-embedded</id>
+
+            <dependencies>
+                <dependency>
+                    <groupId>org.glassfish.main.extras</groupId>
+                    <artifactId>glassfish-embedded-all</artifactId>
+                    <version>${glassfish.version}</version>
+                    <scope>test</scope>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.omnifaces.arquillian</groupId>
+                    <artifactId>arquillian-glassfish-server-embedded</artifactId>
+                    <version>1.4</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
             <id>payara-embedded</id>
 
             <dependencies>
@@ -714,7 +735,7 @@
             </dependencies>
         </profile>
         
-         <profile>
+        <profile>
             <id>glassfish-remote</id>
             
             <dependencies>
@@ -727,26 +748,26 @@
             </dependencies>
             <build>
                 <plugins>
-                   <plugin>
-                      <groupId>org.apache.maven.plugins</groupId>
-                      <artifactId>maven-failsafe-plugin</artifactId>
-                      <version>${failsafe-plugin.version}</version>
-                      <executions>
-                        <execution>
-                          <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                          </goals>
-                        </execution>
-                      </executions>
-                      <configuration>
-                        <systemPropertyVariables>
-                          <finalName>${project.build.finalName}</finalName>
-                        </systemPropertyVariables>
-                        <environmentVariables>
-                          <GLASSFISH_HOME>${env.S1AS_HOME}/..</GLASSFISH_HOME>
-                        </environmentVariables>
-                      </configuration>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>${failsafe-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <finalName>${project.build.finalName}</finalName>
+                            </systemPropertyVariables>
+                            <environmentVariables>
+                                <GLASSFISH_HOME>${env.S1AS_HOME}/..</GLASSFISH_HOME>
+                            </environmentVariables>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -755,7 +776,7 @@
         <profile>
             <id>glassfish</id>
             
-           <repositories>
+            <repositories>
                 <repository>
                     <id>glassfish Promoted</id>
                     <url>https://maven.java.net/content/repositories/promoted/</url>
